@@ -1,0 +1,8 @@
+.letter-cube {
+	border: solid 1px black;
+	height: 30px;
+	width: 30px;
+	float: left;
+	margin: 5px;
+	text-align: center;
+}
