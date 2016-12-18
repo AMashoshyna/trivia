@@ -1,3 +1,4 @@
+var data = {}
 function req() {
 
 	clearLetterContainer()
@@ -14,6 +15,7 @@ function req() {
 		if(!validateAnswer(answer)) {
 			req();
 		} else {
+			data.answer = answer;
 			const question = res[0].question;
 			const id = res[0].id;
 			const category = res[0].category.title;
@@ -87,4 +89,27 @@ function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
     ev.target.appendChild(document.getElementById(data));
+    userAnswer.push(document.getElementById(data).innerHTML);
+    console.log(userAnswer);
+    if(!checkRemainingLetters()) {
+	    	checkUserAnswer();
+    }
+};
+
+var userAnswer = [];
+
+function checkRemainingLetters() {
+	var parent = document.getElementById('letter-container');
+	if(parent.firstChild) {
+		return true;
+	} return false;
+};
+
+function checkUserAnswer() {
+	var proposedAnswer = userAnswer.join('');
+	if(proposedAnswer !== data.answer) {
+		alert('wrong answer');
+	} else {
+		alert('answer accepted');
+	}
 }
