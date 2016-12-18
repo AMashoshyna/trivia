@@ -6,29 +6,37 @@
 	<link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body ng-app="App">
+<!-- <div class="container"> -->
 	<nav class="navbar navbar-dark bg-primary">
-		<div class="text">QUIZ GAME</div>
+	<div class="container">
+
+		<div class="text"><h3>QUIZ GAME</h3></div>
+		</div>
 	</nav>
 	<div class="container">
 		<div class="row">
 			<div class="col-md-4">
-				<div class="text text-center">Correct answers</div>
+				<div class="text text-right"><h5>Correct answers</h5></div>
 			</div>
 			<div class="col-md-4">
 				<div class="text h3 text-center">Question</div>
 				<div class="text h4 text-center">Category</div>
 				<div class="well">Lorem ipsum</div>
-				<div class="well">test</div>
+				
 				<div class="btn btn-primary btn-block">Skip</div>
-				<div class="letter-cube"></div>
-				<div class="letter-cube"></div>
-				<div class="letter-cube"></div>
 
+				<div class="text-center"> <h4 class="text-danger"><span class="glyphicon glyphicon-ok-circle"></span>INCORRECT</h4></div>
+				<div class="text-center"> <h4 class="text-success"><span class="glyphicon glyphicon-remove-circle"></span>CORRECT</h4></div>
+				<div class="well">test</div>
+				<div class="letter-cube"></div>
+				<div class="letter-cube"></div>
+				<div class="letter-cube"></div>
 			</div>
 			<div class="col-md-4">
-				<div class="text text-center">Total questions</div>
+				<div  class="text text-left">Total questions</div>
 			</div>
 		</div>
 	</div>
+	<!-- </div> -->
 </body>
 </html>
