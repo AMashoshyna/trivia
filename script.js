@@ -1,6 +1,6 @@
 function req() {
 
-	removeOldLetters()
+	clearLetterContainer()
 
 	const xhr = new XMLHttpRequest();
 	xhr.open('GET', 'https://jservice.io/api/random', false);
@@ -28,8 +28,10 @@ function req() {
 				var element = document.createElement('div');
 				element.className += 'letter-cube';
 				element.setAttribute('draggable', true);
+				element.setAttribute('id', i);
+				element.setAttribute('ondragstart', "drag(event)")
 				element.innerHTML = shuffledAnswer[i];
-				var parent = document.getElementById('letter-soup');
+				var parent = document.getElementById('letter-container');
 				parent.appendChild(element);
 
 			}
@@ -65,9 +67,24 @@ function validateAnswer(answer) {
 	}
 };
 
-function removeOldLetters() {
-	var parent = document.getElementById('letter-soup');
+function clearLetterContainer() {
+	var parent = document.getElementById('letter-container');
 while(parent.firstChild) {
 	parent.removeChild(parent.firstChild)
 }
+}
+
+// drag-n-drop
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.target.appendChild(document.getElementById(data));
 }

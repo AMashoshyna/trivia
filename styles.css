@@ -7,3 +7,11 @@
 	text-align: center;
 	box-shadow: 1px 1px 1px #888888;
 }
+#answer-container {
+	min-height: 45px;
+
+}
+#letter-container {
+	min-height: 45px;
+
+}
