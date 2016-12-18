@@ -1,7 +1,10 @@
 var data = {}
 function req() {
 
-	clearLetterContainer()
+	clearLetterContainer();
+	clearAnswerContainer();
+	document.getElementById('incorrect-message').classList.add('hidden');
+	document.getElementById('correct-message').classList.add('hidden');
 
 	const xhr = new XMLHttpRequest();
 	xhr.open('GET', 'https://jservice.io/api/random', false);
@@ -74,6 +77,12 @@ function clearLetterContainer() {
 while(parent.firstChild) {
 	parent.removeChild(parent.firstChild)
 }
+};
+function clearAnswerContainer() {
+	var parent = document.getElementById('answer-container');
+while(parent.firstChild) {
+	parent.removeChild(parent.firstChild)
+}
 }
 
 // drag-n-drop
@@ -95,6 +104,13 @@ function drop(ev) {
 	    	checkUserAnswer();
     }
 };
+function dropBack(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.target.appendChild(document.getElementById(data));
+    userAnswer.splice(userAnswer.indexOf(data), 1)
+    console.log(userAnswer);
+};
 
 var userAnswer = [];
 
@@ -108,8 +124,8 @@ function checkRemainingLetters() {
 function checkUserAnswer() {
 	var proposedAnswer = userAnswer.join('');
 	if(proposedAnswer !== data.answer) {
-		alert('wrong answer');
+		document.getElementById('incorrect-message').classList.remove('hidden');
 	} else {
-		alert('answer accepted');
+		document.getElementById('correct-message').classList.remove('hidden');
 	}
 }
