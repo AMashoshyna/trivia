@@ -12,12 +12,21 @@ function req() {
 		const id = res[0].id;
 		const category = res[0].category.title;
 
-
 	document.getElementById('question').innerHTML = question;
 	document.getElementById('id').innerHTML = 'QUESTION ' + id;
 	console.log(answer);
 	document.getElementById('category').innerHTML =  'Category: ' + category;
-	};
 
+	for(var i = 0; i < answer.length; i++) {
+		var element = document.createElement('div');
+		element.className += 'letter-cube';
+		element.innerHTML = answer[i];
+		var parent = document.getElementById('letter-soup');
+		parent.appendChild(element);
+
+	}
+
+
+	};
 };
 req();
