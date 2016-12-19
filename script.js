@@ -99,14 +99,18 @@ function drag(ev) {
 
 function drop(ev) {
     ev.preventDefault();
+    if(ev.target.getAttribute('id')!=="answer-container") {
+    	ev.stopPropagation();
+    	return;
+    }
     var data = ev.dataTransfer.getData("text");
-    ev.target.appendChild(document.getElementById(data));
     if(checkDoubling(userAnswer, document.getElementById(data))) {
     	removeDouble(userAnswer, document.getElementById(data))
     }
     userAnswer.push({'letter': document.getElementById(data).innerHTML,
 'id': document.getElementById(data).getAttribute('id') });
     console.log(userAnswer);
+    ev.target.appendChild(document.getElementById(data));
     if(!checkRemainingLetters()) {
 	    	checkUserAnswer();
     }
@@ -116,7 +120,6 @@ function dropBack(ev) {
     var data = ev.dataTransfer.getData("text");
     ev.target.appendChild(document.getElementById(data));
     userAnswer.splice(userAnswer.indexOf(data), 1)
-    console.log(userAnswer);
 };
 
 function checkDoubling(arr, item) {
@@ -132,7 +135,6 @@ function checkDoubling(arr, item) {
 };
 
 function removeDouble(arr, item) {
-	debugger;
 	var id = item.getAttribute('id');
 	for(var i = 0; i < arr.length; i++) {
 		if(arr[i].id === id) {
@@ -140,7 +142,6 @@ function removeDouble(arr, item) {
 			return;
 		}
 	}
-	
 }
 
 var userAnswer = [];
