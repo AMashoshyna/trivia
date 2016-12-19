@@ -1,11 +1,16 @@
-var data = {}
+
+var data = {};
+// AJAX util
 function req() {
 
+    // reset to initial state
 	clearLetterContainer();
 	clearAnswerContainer();
 	document.getElementById('incorrect-message').classList.add('hidden');
 	document.getElementById('correct-message').classList.add('hidden');
+	userAnswer = [];
 
+ // fetch data from server - thnx for help to fellow kottan @wack17s
 	const xhr = new XMLHttpRequest();
 	xhr.open('GET', 'https://jservice.io/api/random', false);
 	xhr.send();
@@ -14,14 +19,16 @@ function req() {
 		console.log(xhr.status + ': ' + xhr.statusText)
 	} else {
 		const res = JSON.parse(xhr.responseText);
-		const answer = res[0].answer.toLowerCase().trim();
+		var answer = res[0].answer.toLowerCase().trim();
 		if(!validateAnswer(answer)) {
 			req();
 		} else {
+
+			const answer = res[0].answer.toLowerCase().trim();
 			data.answer = answer;
 			const question = res[0].question;
 			const id = res[0].id;
-			const category = res[0].category.title;
+			const category = res[0].category.title.toUpperCase();
 			const shuffledAnswer = shuffle(answer);
 
 			document.getElementById('question').innerHTML = question;
@@ -38,15 +45,11 @@ function req() {
 				element.innerHTML = shuffledAnswer[i];
 				var parent = document.getElementById('letter-container');
 				parent.appendChild(element);
-
 			}
-
 		}
-
 	};
 };
 req();
-
 
 // credit: Andy Earnshaw http://stackoverflow.com/a/3943985/7024059
 function shuffle (str) {
@@ -98,7 +101,11 @@ function drop(ev) {
     ev.preventDefault();
     var data = ev.dataTransfer.getData("text");
     ev.target.appendChild(document.getElementById(data));
-    userAnswer.push(document.getElementById(data).innerHTML);
+    if(checkDoubling(userAnswer, document.getElementById(data))) {
+    	removeDouble(userAnswer, document.getElementById(data))
+    }
+    userAnswer.push({'letter': document.getElementById(data).innerHTML,
+'id': document.getElementById(data).getAttribute('id') });
     console.log(userAnswer);
     if(!checkRemainingLetters()) {
 	    	checkUserAnswer();
@@ -112,6 +119,30 @@ function dropBack(ev) {
     console.log(userAnswer);
 };
 
+function checkDoubling(arr, item) {
+	var result = false;
+	for (var i = 0; i < arr.length; i++) {
+		var attr = item.getAttribute('id');
+		if(arr[i].id === attr) {
+			result = true;
+			return result;
+		} 
+	};
+	return result;
+};
+
+function removeDouble(arr, item) {
+	debugger;
+	var id = item.getAttribute('id');
+	for(var i = 0; i < arr.length; i++) {
+		if(arr[i].id === id) {
+			arr.splice(i, 1);
+			return;
+		}
+	}
+	
+}
+
 var userAnswer = [];
 
 function checkRemainingLetters() {
@@ -122,7 +153,11 @@ function checkRemainingLetters() {
 };
 
 function checkUserAnswer() {
-	var proposedAnswer = userAnswer.join('');
+	var proposedAnswer = [];
+	for(var i = 0; i < userAnswer.length; i++) {
+		proposedAnswer.push(userAnswer[i].letter)
+	}
+	proposedAnswer = proposedAnswer.join('');
 	if(proposedAnswer !== data.answer) {
 		document.getElementById('incorrect-message').classList.remove('hidden');
 	} else {
