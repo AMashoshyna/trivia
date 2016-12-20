@@ -8,6 +8,7 @@ function req() {
 	clearAnswerContainer();
 	document.getElementById('incorrect-message').classList.add('hidden');
 	document.getElementById('correct-message').classList.add('hidden');
+	document.getElementById('get-next-question').classList.add('hidden');
 	userAnswer = [];
 
  // fetch data from server - thnx for help to fellow kottan @wack17s
@@ -163,6 +164,8 @@ function checkUserAnswer() {
 	if(proposedAnswer !== data.answer) {
 		document.getElementById('incorrect-message').classList.remove('hidden');
 	} else {
+		document.getElementById('incorrect-message').classList.add('hidden');
 		document.getElementById('correct-message').classList.remove('hidden');
+		document.getElementById('get-next-question').classList.remove('hidden');
 	}
 }
