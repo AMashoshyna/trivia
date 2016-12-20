@@ -100,7 +100,6 @@ function drag(ev) {
 function drop(ev) {
     ev.preventDefault();
     if(ev.target.getAttribute('id')!=="answer-container") {
-    	ev.stopPropagation();
     	return;
     }
     var data = ev.dataTransfer.getData("text");
@@ -109,7 +108,6 @@ function drop(ev) {
     }
     userAnswer.push({'letter': document.getElementById(data).innerHTML,
 'id': document.getElementById(data).getAttribute('id') });
-    console.log(userAnswer);
     ev.target.appendChild(document.getElementById(data));
     if(!checkRemainingLetters()) {
 	    	checkUserAnswer();
@@ -117,6 +115,9 @@ function drop(ev) {
 };
 function dropBack(ev) {
     ev.preventDefault();
+        if(ev.target.getAttribute('id')!=="letter-container") {
+    	return;
+    }
     var data = ev.dataTransfer.getData("text");
     ev.target.appendChild(document.getElementById(data));
     userAnswer.splice(userAnswer.indexOf(data), 1)
