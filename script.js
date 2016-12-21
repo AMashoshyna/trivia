@@ -1,5 +1,9 @@
 
 var data = {};
+data.answer = '';
+data.round = 0;
+data.score = 0;
+
 // AJAX util
 function req() {
 
@@ -24,18 +28,22 @@ function req() {
 		if(!validateAnswer(answer)) {
 			req();
 		} else {
-
 			const answer = res[0].answer.toLowerCase().trim();
 			data.answer = answer;
+			data.round += 1;
 			const question = res[0].question;
 			const id = res[0].id;
 			const category = res[0].category.title.toUpperCase();
 			const shuffledAnswer = shuffle(answer);
 
-			document.getElementById('question').innerHTML = question;
+           
+
+           	document.getElementById('question').innerHTML = question;
 			document.getElementById('id').innerHTML = 'QUESTION ' + id;
 			console.log(answer);
 			document.getElementById('category').innerHTML =  'Category: ' + category;
+			document.getElementById('progress').innerHTML = "Total questions: " + data.round;
+			document.getElementById('score').innerHTML = "Correct answers: " + data.score;
 
 			for(var i = 0; i < shuffledAnswer.length; i++) {
 				var element = document.createElement('div');
@@ -167,5 +175,7 @@ function checkUserAnswer() {
 		document.getElementById('incorrect-message').classList.add('hidden');
 		document.getElementById('correct-message').classList.remove('hidden');
 		document.getElementById('get-next-question').classList.remove('hidden');
+		data.score +=1;
+		document.getElementById('score').innerHTML = "Correct answers " + data.score;
 	}
 }
