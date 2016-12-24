@@ -74,9 +74,11 @@ function shuffle (str) {
 	return a.join("");
 };
 
+//check if the answer is suitable and if not skip the question
 function validateAnswer(answer) {
-	var regEx = /\s/;
-	if(answer.search(regEx) !== -1) {
+	var regExBlank = /\s/;
+	var regExNonLetters = /[^a-z]/;
+	if(answer.search(regExBlank) !== -1 || answer.length > 10 || answer.length < 2 || answer.search(regExNonLetters) !== -1) {
 		return false;
 
 	} else {
