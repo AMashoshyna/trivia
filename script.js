@@ -175,6 +175,7 @@ function checkUserAnswer() {
 		proposedAnswer.push(userAnswer[i].letter)
 	}
 	proposedAnswer = proposedAnswer.join('');
+	console.log("proposed answer " + proposedAnswer);
 	if(proposedAnswer !== data.answer) {
 		document.getElementById('incorrect-message').classList.remove('hidden');
 	} else {
@@ -188,7 +189,7 @@ function checkUserAnswer() {
 
 function checkRemainingLetters() {
 	var parent = document.getElementById('letter-container');
-	if(parent.firstChild) {
+	if(parent.querySelectorAll(".letter").length > 0) {
 		return true;
 	} return false;
 };
