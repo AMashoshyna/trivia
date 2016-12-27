@@ -1,14 +1,29 @@
-.letter-cube {
+.letter {
+	height: 40px;
+	line-height: 40px;
+	width: 40px;
+	float: left;
+	/*margin: 5px;*/
+	margin: 0;
+	text-align: center;
+	background-color: white;
 	border: solid 1px #888888;
-	height: 30px;
-	width: 30px;
+	box-shadow: 1px 1px 1px #888888;
+	border-radius: 5px;
+}
+
+.letter-box {
+	height: 45px;
+	width: 45px;
+	background-color: #F5F5F5;
+	border: solid 1px #888888;
 	float: left;
 	margin: 5px;
-	text-align: center;
-	box-shadow: 1px 1px 1px #888888;
+	border-radius: 5px;
 }
+
 #answer-container {
-	min-height: 45px;
+	min-height: 54px;
 }
 #letter-container {
 	min-height: 45px;

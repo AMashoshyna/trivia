@@ -3,60 +3,73 @@ var data = {};
 data.answer = '';
 data.round = 0;
 data.score = 0;
+var userAnswer = [];
 
 // AJAX util
 function req() {
 
     // reset to initial state
-	clearLetterContainer();
-	clearAnswerContainer();
-	document.getElementById('incorrect-message').classList.add('hidden');
-	document.getElementById('correct-message').classList.add('hidden');
-	document.getElementById('get-next-question').classList.add('hidden');
-	userAnswer = [];
+    clearLetterContainer();
+    clearAnswerContainer();
+    document.getElementById('incorrect-message').classList.add('hidden');
+    document.getElementById('correct-message').classList.add('hidden');
+    document.getElementById('get-next-question').classList.add('hidden');
+    userAnswer = [];
 
- // fetch data from server - thnx for help to fellow kottan @wack17s
-	const xhr = new XMLHttpRequest();
-	xhr.open('GET', 'https://jservice.io/api/random', false);
-	xhr.send();
+// fetch data from server - thnx for help to fellow kottan @wack17s
+const xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://jservice.io/api/random', false);
+xhr.send();
 
-	if(xhr.status !=200) {
-		console.log(xhr.status + ': ' + xhr.statusText)
+if(xhr.status != 200) {
+	console.log(xhr.status + ': ' + xhr.statusText)
+} else {
+	const res = JSON.parse(xhr.responseText);
+	var answer = res[0].answer.toUpperCase().trim();
+	if(!validateAnswer(answer)) {
+		req();
 	} else {
-		const res = JSON.parse(xhr.responseText);
-		var answer = res[0].answer.toLowerCase().trim();
-		if(!validateAnswer(answer)) {
-			req();
-		} else {
-			const answer = res[0].answer.toLowerCase().trim();
-			data.answer = answer;
-			data.round += 1;
-			const question = res[0].question;
-			const id = res[0].id;
-			const category = res[0].category.title.toUpperCase();
-			const shuffledAnswer = shuffle(answer);
+		const answer = res[0].answer.toUpperCase().trim();
+		data.answer = answer;
+		data.round += 1;
+		const question = res[0].question;
+		const id = res[0].id;
+		const category = res[0].category.title;
+		const shuffledAnswer = shuffle(answer);
 
-           
+		document.getElementById('question').innerHTML = question;
+		document.getElementById('id').innerHTML = 'QUESTION ' + id;
+		console.log(answer);
+		document.getElementById('category').innerHTML =  'Category: ' + category;
+		document.getElementById('progress').innerHTML = "Total questions: " + data.round;
+		document.getElementById('score').innerHTML = "Correct answers: " + data.score;
 
-           	document.getElementById('question').innerHTML = question;
-			document.getElementById('id').innerHTML = 'QUESTION ' + id;
-			console.log(answer);
-			document.getElementById('category').innerHTML =  'Category: ' + category;
-			document.getElementById('progress').innerHTML = "Total questions: " + data.round;
-			document.getElementById('score').innerHTML = "Correct answers: " + data.score;
-
-			for(var i = 0; i < shuffledAnswer.length; i++) {
-				var element = document.createElement('div');
-				element.className += 'letter-cube';
-				element.setAttribute('draggable', true);
-				element.setAttribute('id', i);
-				element.setAttribute('ondragstart', "drag(event)")
-				element.innerHTML = shuffledAnswer[i];
-				var parent = document.getElementById('letter-container');
-				parent.appendChild(element);
-			}
+		for(var i = 0; i < shuffledAnswer.length; i++) {
+			var boxElement = document.createElement('div');
+			boxElement.className += 'letter-box';
+			boxElement.setAttribute('ondrop', "drop(event)");
+			boxElement.setAttribute('ondragover', "allowDrop(event)");
+			document.getElementById('answer-container').appendChild(boxElement);
 		}
-	};
+
+		for(var i = 0; i < shuffledAnswer.length; i++) {
+			var boxElement = document.createElement('div');
+			boxElement.className += 'letter-box';
+			boxElement.setAttribute('ondrop', "dropBack(event)");
+			boxElement.setAttribute('ondragover', "allowDrop(event)");
+
+			var element = document.createElement('div');
+			element.className += 'letter';
+			element.setAttribute('draggable', true);
+			element.setAttribute('id', i);
+			element.setAttribute('ondragstart', "drag(event)")
+			element.innerHTML = shuffledAnswer[i];
+			boxElement.appendChild(element);
+			var parent = document.getElementById('letter-container');
+			parent.appendChild(boxElement);
+		};
+	}
+};
 };
 req();
 
@@ -74,13 +87,12 @@ function shuffle (str) {
 	return a.join("");
 };
 
-//check if the answer is suitable and if not skip the question
+//check if the answer is suitable, otherwise skip the question
 function validateAnswer(answer) {
 	var regExBlank = /\s/;
 	var regExNonLetters = /[^a-z]/;
-	if(answer.search(regExBlank) !== -1 || answer.length > 10 || answer.length < 2 || answer.search(regExNonLetters) !== -1) {
+	if(answer.search(regExBlank) !== -1 || answer.length > 10 || answer.length < 2) {
 		return false;
-
 	} else {
 		return true
 	}
@@ -88,50 +100,51 @@ function validateAnswer(answer) {
 
 function clearLetterContainer() {
 	var parent = document.getElementById('letter-container');
-while(parent.firstChild) {
-	parent.removeChild(parent.firstChild)
-}
+	while(parent.firstChild) {
+		parent.removeChild(parent.firstChild)
+	}
 };
 function clearAnswerContainer() {
 	var parent = document.getElementById('answer-container');
-while(parent.firstChild) {
-	parent.removeChild(parent.firstChild)
-}
+	while(parent.firstChild) {
+		parent.removeChild(parent.firstChild)
+	}
 }
 
 // drag-n-drop
 function allowDrop(ev) {
-    ev.preventDefault();
+	ev.preventDefault();
 }
 
 function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
+	ev.dataTransfer.setData("text", ev.target.id);
 }
 
 function drop(ev) {
-    ev.preventDefault();
-    if(ev.target.getAttribute('id')!=="answer-container") {
-    	return;
-    }
-    var data = ev.dataTransfer.getData("text");
-    if(checkDoubling(userAnswer, document.getElementById(data))) {
-    	removeDouble(userAnswer, document.getElementById(data))
-    }
-    userAnswer.push({'letter': document.getElementById(data).innerHTML,
-'id': document.getElementById(data).getAttribute('id') });
-    ev.target.appendChild(document.getElementById(data));
-    if(!checkRemainingLetters()) {
-	    	checkUserAnswer();
-    }
+	ev.preventDefault();
+	if(ev.target.getAttribute('class')!=="letter-box") {
+		return;
+	}
+	var data = ev.dataTransfer.getData("text");
+	if(checkDoubling(userAnswer, document.getElementById(data))) {
+		removeDouble(userAnswer, document.getElementById(data))
+	}
+	userAnswer.push({'letter': document.getElementById(data).innerHTML,
+		'id': document.getElementById(data).getAttribute('id') });
+	ev.target.appendChild(document.getElementById(data));
+	if(!checkRemainingLetters()) {
+		checkUserAnswer();
+	}
 };
+
 function dropBack(ev) {
-    ev.preventDefault();
-        if(ev.target.getAttribute('id')!=="letter-container") {
-    	return;
-    }
-    var data = ev.dataTransfer.getData("text");
-    ev.target.appendChild(document.getElementById(data));
-    userAnswer.splice(userAnswer.indexOf(data), 1)
+	ev.preventDefault();
+	if(ev.target.getAttribute('class')!=="letter-box") {
+		return;
+	}
+	var data = ev.dataTransfer.getData("text");
+	ev.target.appendChild(document.getElementById(data));
+	userAnswer.splice(userAnswer.indexOf(data), 1)
 };
 
 function checkDoubling(arr, item) {
@@ -156,15 +169,6 @@ function removeDouble(arr, item) {
 	}
 }
 
-var userAnswer = [];
-
-function checkRemainingLetters() {
-	var parent = document.getElementById('letter-container');
-	if(parent.firstChild) {
-		return true;
-	} return false;
-};
-
 function checkUserAnswer() {
 	var proposedAnswer = [];
 	for(var i = 0; i < userAnswer.length; i++) {
@@ -181,3 +185,10 @@ function checkUserAnswer() {
 		document.getElementById('score').innerHTML = "Correct answers " + data.score;
 	}
 }
+
+function checkRemainingLetters() {
+	var parent = document.getElementById('letter-container');
+	if(parent.firstChild) {
+		return true;
+	} return false;
+};
