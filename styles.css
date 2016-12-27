@@ -1,39 +1,60 @@
 .letter {
+	position: absolute;
+	top: 50%;
 	height: 40px;
+	margin-top: -20px;
 	line-height: 40px;
 	width: 40px;
-	float: left;
-	/*margin: 5px;*/
-	margin: 0;
+	left: 2px;
 	text-align: center;
 	background-color: white;
 	border: solid 1px #888888;
-	box-shadow: 1px 1px 1px #888888;
 	border-radius: 5px;
 }
 
 .letter-box {
-	height: 45px;
-	width: 45px;
+	position: relative;
+	height: 46px;
+	width: 46px;
+	float: left;
 	background-color: #F5F5F5;
 	border: solid 1px #888888;
-	float: left;
 	margin: 5px;
+	text-align: center;
 	border-radius: 5px;
 }
 
 #answer-container {
-	min-height: 54px;
+	min-height: 57px;
+	text-align: center;
 }
 #letter-container {
-	min-height: 54px;
 
+	min-height: 57px;
+	text-align: center;
+
+}
+.msg-container {
+	position: relative;
+	text-align: center;
+	height: 50px;
 }
 .hidden {
 	display: none;
-};
+}
+
+h4 {
+	margin-top: 0px;
+	text-align: center;
+}
 
 #incorrect-message, #correct-message {
-	height: 45px;
-
+	position: absolute;
+	top: 50%;
+	margin-top: -25px;
+	height: 50px;
+	line-height: 50px;
+	width: 100%;
+	margin-left: 0;
+	margin-right: 0;
 }
