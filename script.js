@@ -175,7 +175,6 @@ function checkUserAnswer() {
 		proposedAnswer.push(userAnswer[i].letter)
 	}
 	proposedAnswer = proposedAnswer.join('');
-	console.log("proposed answer " + proposedAnswer);
 	if(proposedAnswer !== data.answer) {
 		document.getElementById('incorrect-message').classList.remove('hidden');
 	} else {
