@@ -4,17 +4,19 @@ data.answer = '';
 data.round = 0;
 data.score = 0;
 var userAnswer = [];
+var letter_container_elem = document.getElementById('letter-container');
+var correct_message_elem = document.getElementById('correct-message');
+var incorrect_message_elem = document.getElementById('incorrect-message');
+var get_next_question_btn = document.getElementById('get-next-question');
+var question_elem = document.getElementById('question');
+var id_elem = document.getElementById('id');
+var category_elem = document.getElementById('category');
+var score_elem = document.getElementById('score');
+var progress_elem = document.getElementById('progress');
 
 // AJAX util
 function req() {
-
-    // reset to initial state
-    clearLetterContainer();
-    clearAnswerContainer();
-    document.getElementById('incorrect-message').classList.add('hidden');
-    document.getElementById('correct-message').classList.add('hidden');
-    document.getElementById('get-next-question').classList.add('hidden');
-    userAnswer = [];
+	resetState();
 
 // fetch data from server - thnx for help to fellow kottan @wack17s
 const xhr = new XMLHttpRequest();
@@ -25,53 +27,64 @@ if(xhr.status != 200) {
 	console.log(xhr.status + ': ' + xhr.statusText)
 } else {
 	const res = JSON.parse(xhr.responseText);
-	var answer = res[0].answer.toUpperCase().trim();
-	if(!validateAnswer(answer)) {
+	var nextAnswer = res[0].answer.toUpperCase().trim();
+	if(!validateAnswer(nextAnswer)) {
 		req();
 	} else {
-		const answer = res[0].answer.toUpperCase().trim();
-		data.answer = answer;
+		data.answer = res[0].answer.toUpperCase().trim();
 		data.round += 1;
-		const question = res[0].question;
-		const id = res[0].id;
-		const category = res[0].category.title;
-		const shuffledAnswer = shuffle(answer);
-
-		document.getElementById('question').innerHTML = question;
-		document.getElementById('id').innerHTML = 'QUESTION ' + id;
-		console.log(answer);
-		document.getElementById('category').innerHTML =  'Category: ' + category;
-		document.getElementById('progress').innerHTML = "Total questions: " + data.round;
-		document.getElementById('score').innerHTML = "Correct answers: " + data.score;
-
-		for(var i = 0; i < shuffledAnswer.length; i++) {
-			var boxElement = document.createElement('div');
-			boxElement.className += 'letter-box';
-			boxElement.setAttribute('ondrop', "drop(event)");
-			boxElement.setAttribute('ondragover', "allowDrop(event)");
-			document.getElementById('answer-container').appendChild(boxElement);
-		}
-
-		for(var i = 0; i < shuffledAnswer.length; i++) {
-			var boxElement = document.createElement('div');
-			boxElement.className += 'letter-box';
-			boxElement.setAttribute('ondrop', "dropBack(event)");
-			boxElement.setAttribute('ondragover', "allowDrop(event)");
-
-			var element = document.createElement('div');
-			element.className += 'letter';
-			element.setAttribute('draggable', true);
-			element.setAttribute('id', i);
-			element.setAttribute('ondragstart', "drag(event)")
-			element.innerHTML = shuffledAnswer[i];
-			boxElement.appendChild(element);
-			var parent = document.getElementById('letter-container');
-			parent.appendChild(boxElement);
-		};
+		data.question = res[0].question;
+		data.id = res[0].id;
+		data.category = res[0].category.title;
+		data.shuffledAnswer = shuffle(data.answer);
+		showNewQuestion(data);
 	}
 };
 };
 req();
+
+function resetState() {
+	clearContainer(letter_container_elem);
+	clearContainer(answer_container_elem);
+	incorrect_message_elem.classList.add('hidden');
+	correct_message_elem.classList.add('hidden');
+	get_next_question_btn.classList.add('hidden');
+	userAnswer = [];
+};
+
+
+function showNewQuestion(data) {
+	question_elem.innerHTML = data.question;
+	id_elem.innerHTML = 'QUESTION ' + data.id;
+	console.log(data.answer);
+	category_elem.innerHTML =  'Category: ' + data.category;
+	document.getElementById('progress').innerHTML = "Total questions: " + data.round;
+	document.getElementById('score').innerHTML = "Correct answers: " + data.score;
+
+	for(var i = 0; i < data.shuffledAnswer.length; i++) {
+		var boxElement = document.createElement('div');
+		boxElement.className += 'letter-box';
+		boxElement.setAttribute('ondrop', "drop(event)");
+		boxElement.setAttribute('ondragover', "allowDrop(event)");
+		answer_container_elem.appendChild(boxElement);
+	}
+
+	for(var i = 0; i < data.shuffledAnswer.length; i++) {
+		var boxElement = document.createElement('div');
+		boxElement.className += 'letter-box';
+		boxElement.setAttribute('ondrop', "drop(event)");
+		boxElement.setAttribute('ondragover', "allowDrop(event)");
+
+		var element = document.createElement('div');
+		element.className += 'letter';
+		element.setAttribute('draggable', true);
+		element.setAttribute('id', i);
+		element.setAttribute('ondragstart', "drag(event)")
+		element.innerHTML = data.shuffledAnswer[i];
+		boxElement.appendChild(element);
+		letter_container_elem.appendChild(boxElement);
+	};
+}
 
 // credit: Andy Earnshaw http://stackoverflow.com/a/3943985/7024059
 function shuffle (str) {
@@ -98,18 +111,11 @@ function validateAnswer(answer) {
 	}
 };
 
-function clearLetterContainer() {
-	var parent = document.getElementById('letter-container');
-	while(parent.firstChild) {
-		parent.removeChild(parent.firstChild)
+function clearContainer(elem)  {
+	while(elem.firstChild) {
+		elem.removeChild(elem.firstChild)
 	}
 };
-function clearAnswerContainer() {
-	var parent = document.getElementById('answer-container');
-	while(parent.firstChild) {
-		parent.removeChild(parent.firstChild)
-	}
-}
 
 // drag-n-drop
 function allowDrop(ev) {
@@ -126,25 +132,21 @@ function drop(ev) {
 		return;
 	}
 	var data = ev.dataTransfer.getData("text");
-	if(checkDoubling(userAnswer, document.getElementById(data))) {
-		removeDouble(userAnswer, document.getElementById(data))
-	}
-	userAnswer.push({'letter': document.getElementById(data).innerHTML,
-		'id': document.getElementById(data).getAttribute('id') });
 	ev.target.appendChild(document.getElementById(data));
-	if(!checkRemainingLetters()) {
-		checkUserAnswer();
+	if(checkContainer(letter_container_elem, ev.target)) {
+		// if letter is dragged from answer container back to letter container
+		userAnswer.splice(userAnswer.indexOf(data), 1)
+	} else {
+		// if letter is dragged to answer container
+		if(checkDoubling(userAnswer, document.getElementById(data))) {
+			removeDouble(userAnswer, document.getElementById(data))
+		}
+		userAnswer.push({'letter': document.getElementById(data).innerHTML,
+			'id': document.getElementById(data).getAttribute('id') });
+		if(!checkRemainingLetters()) {
+			checkUserAnswer();
+		}
 	}
-};
-
-function dropBack(ev) {
-	ev.preventDefault();
-	if(ev.target.getAttribute('class')!=="letter-box") {
-		return;
-	}
-	var data = ev.dataTransfer.getData("text");
-	ev.target.appendChild(document.getElementById(data));
-	userAnswer.splice(userAnswer.indexOf(data), 1)
 };
 
 function checkDoubling(arr, item) {
@@ -176,19 +178,29 @@ function checkUserAnswer() {
 	}
 	proposedAnswer = proposedAnswer.join('');
 	if(proposedAnswer !== data.answer) {
-		document.getElementById('incorrect-message').classList.remove('hidden');
+		incorrect_message_elem.classList.remove('hidden');
 	} else {
-		document.getElementById('incorrect-message').classList.add('hidden');
-		document.getElementById('correct-message').classList.remove('hidden');
-		document.getElementById('get-next-question').classList.remove('hidden');
+		incorrect_message_elem.classList.add('hidden');
+		correct_message_elem.classList.remove('hidden');
+		get_next_question_btn.classList.remove('hidden');
 		data.score +=1;
-		document.getElementById('score').innerHTML = "Correct answers " + data.score;
+		score_elem.innerHTML = "Correct answers " + data.score;
 	}
 }
 
 function checkRemainingLetters() {
-	var parent = document.getElementById('letter-container');
-	if(parent.querySelectorAll(".letter").length > 0) {
+	if(letter_container_elem.querySelectorAll(".letter").length > 0) {
 		return true;
 	} return false;
 };
+
+function checkContainer(container, child) {
+	var node = child.parentNode;
+	while (node != null) {
+		if (node == container) {
+			return true;
+		}
+		node = node.parentNode;
+	}
+	return false;
+}
