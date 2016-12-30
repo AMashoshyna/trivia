@@ -16,12 +16,13 @@ var category_elem = document.getElementById('category');
 var score_elem = document.getElementById('score');
 var progress_elem = document.getElementById('progress');
 
+skip_question_btn.addEventListener('click', getNewQuestion, false);
+get_next_question_btn.addEventListener('click', getNewQuestion, false);
 
-skip_question_btn.addEventListener('click', req);
-get_next_question_btn.addEventListener('click', req);
+getNewQuestion();
 
-// AJAX util
-function req() {
+function getNewQuestion() {
+	var response, nextAnswer;
 	resetState();
 
 // fetch data from server - thnx for help to fellow kottan @wack17s
@@ -32,22 +33,21 @@ xhr.send();
 if(xhr.status != 200) {
 	console.log(xhr.status + ': ' + xhr.statusText)
 } else {
-	const res = JSON.parse(xhr.responseText);
-	var nextAnswer = res[0].answer.toUpperCase().trim();
+	response = JSON.parse(xhr.responseText);
+	nextAnswer = response[0].answer.toUpperCase().trim();
 	if(!validateAnswer(nextAnswer)) {
-		req();
+		getNewQuestion();
 	} else {
-		data.answer = res[0].answer.toUpperCase().trim();
+		data.answer = response[0].answer.toUpperCase().trim();
 		data.round += 1;
-		data.question = res[0].question;
-		data.id = res[0].id;
-		data.category = res[0].category.title;
+		data.question = response[0].question;
+		data.id = response[0].id;
+		data.category = response[0].category.title;
 		data.shuffledAnswer = shuffle(data.answer);
 		showNewQuestion(data);
 	}
 };
 };
-req();
 
 function resetState() {
 	clearContainer(letter_container_elem);
@@ -64,22 +64,22 @@ function showNewQuestion(data) {
 	id_elem.innerHTML = 'QUESTION ' + data.id;
 	console.log(data.answer);
 	category_elem.innerHTML =  'Category: ' + data.category;
-	document.getElementById('progress').innerHTML = "Total questions: " + data.round;
-	document.getElementById('score').innerHTML = "Correct answers: " + data.score;
+	progress_elem.innerHTML = "Total questions: " + data.round;
+	score_elem.innerHTML = "Correct answers: " + data.score;
 
 	for(var i = 0; i < data.shuffledAnswer.length; i++) {
 		var boxElement = document.createElement('div');
 		boxElement.className += 'letter-box';
-		boxElement.setAttribute('ondrop', "drop(event)");
-		boxElement.setAttribute('ondragover', "allowDrop(event)");
+		boxElement.addEventListener('drop', drop, false);
+		boxElement.addEventListener('dragover', allowDrop, false);
 		answer_container_elem.appendChild(boxElement);
 	}
 
 	for(var i = 0; i < data.shuffledAnswer.length; i++) {
 		var boxElement = document.createElement('div');
 		boxElement.className += 'letter-box';
-		boxElement.setAttribute('ondrop', "drop(event)");
-		boxElement.setAttribute('ondragover', "allowDrop(event)");
+		boxElement.addEventListener('drop', drop, false);
+		boxElement.addEventListener('dragover', allowDrop, false);
 
 		var element = document.createElement('div');
 		element.className += 'letter';
@@ -92,19 +92,12 @@ function showNewQuestion(data) {
 	};
 }
 
-// credit: Andy Earnshaw http://stackoverflow.com/a/3943985/7024059
-function shuffle (str) {
-	var a = str.split(""),
-	n = a.length;
+// thnx for hint to fellow kottan zonzujiro
+function shuffle(str) {
+	var arr = str.split("");
+	return arr.sort(() => 0.5 - Math.random()).join("");
 
-	for(var i = n - 1; i > 0; i--) {
-		var j = Math.floor(Math.random() * (i + 1));
-		var tmp = a[i];
-		a[i] = a[j];
-		a[j] = tmp;
-	}
-	return a.join("");
-};
+}
 
 //check if the answer is suitable, otherwise skip the question
 function validateAnswer(answer) {
@@ -157,8 +150,9 @@ function drop(ev) {
 
 function checkDoubling(arr, item) {
 	var result = false;
+	var attr;
 	for (var i = 0; i < arr.length; i++) {
-		var attr = item.getAttribute('id');
+		attr = item.getAttribute('id');
 		if(arr[i].id === attr) {
 			result = true;
 			return result;
@@ -195,9 +189,7 @@ function checkUserAnswer() {
 }
 
 function checkRemainingLetters() {
-	if(letter_container_elem.querySelectorAll(".letter").length > 0) {
-		return true;
-	} return false;
+	return letter_container_elem.querySelectorAll(".letter").length > 0;
 };
 
 function checkContainer(container, child) {
