@@ -20,13 +20,13 @@
 				<div class="text h3 text-center" id="id">Question</div>
 				<div class="text h4 text-center" id="category">Category</div>
 				<div class="well" id="question">Lorem ipsum</div>
-				<div class="btn btn-primary btn-block" onclick="req()">Skip</div>
+				<div class="btn btn-primary btn-block" id="skip-question">Skip</div>
 				<div class="msg-container"><h4 class="text-danger hidden" id="incorrect-message"><span class="glyphicon glyphicon-remove-circle"></span>INCORRECT</h4>
 <h4 class="text-success hidden" id="correct-message"><span class="glyphicon glyphicon-ok-circle"></span>CORRECT</h4>
 				</div>
 				<div class="panel panel-default" id="answer-container"></div>
-				<div class="panel panel-default" id="letter-container" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-				<div class="btn btn-success btn-block  hidden" id="get-next-question" onclick="req()">Next</div>
+				<div class="panel panel-default" id="letter-container"></div>
+				<div class="btn btn-success btn-block  hidden" id="get-next-question">Next</div>
 			</div>
 			<div class="col-md-2">
 				<div  class="text text-left" id="progress">Total questions</div>

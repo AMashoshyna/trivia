@@ -4,15 +4,21 @@ data.answer = '';
 data.round = 0;
 data.score = 0;
 var userAnswer = [];
+var answer_container_elem = document.getElementById('answer-container');
 var letter_container_elem = document.getElementById('letter-container');
 var correct_message_elem = document.getElementById('correct-message');
 var incorrect_message_elem = document.getElementById('incorrect-message');
+var skip_question_btn = document.getElementById('skip-question');
 var get_next_question_btn = document.getElementById('get-next-question');
 var question_elem = document.getElementById('question');
 var id_elem = document.getElementById('id');
 var category_elem = document.getElementById('category');
 var score_elem = document.getElementById('score');
 var progress_elem = document.getElementById('progress');
+
+
+skip_question_btn.addEventListener('click', req);
+get_next_question_btn.addEventListener('click', req);
 
 // AJAX util
 function req() {
